@@ -1,0 +1,41 @@
+{
+    "base_config": "config/car_collision_config.json",
+    "default_model_path": "./model/car",
+    "time_overrides": {
+        "frame_num": 200,
+        "frame_dt": 0.04
+    },
+    "camera": {
+        "overrides": {
+            "default_camera_index": 94,
+            "move_camera": false
+        }
+    },
+    "objects": [
+        {
+            "id": "car_left",
+            "config": "config/car_collision_config.json",
+            "placement": {
+                "translation": [-0.12, 0.04, 0.0]
+            }
+        },
+        {
+            "id": "car_right",
+            "config": "config/car_collision_config.json",
+            "placement": {
+                "translation": [0.12, -0.04, 0.0]
+            }
+        }
+    ],
+    "interactions": [
+        {
+            "type": "object_collision",
+            "object_a": "car_left",
+            "object_b": "car_right",
+            "axis": [1.0, 0.0, 0.0],
+            "speed": 0.12,
+            "start_time": 0.0,
+            "end_time": 2.8
+        }
+    ]
+}

@@ -46,11 +46,20 @@ class PipelineParamsNoparse:
 
 def load_checkpoint(model_path, sh_degree=3, iteration=-1):
     checkpt_dir = os.path.join(model_path, "point_cloud")
-    if iteration == -1:
-        iteration = searchForMaxIteration(checkpt_dir)
-    checkpt_path = os.path.join(
-        checkpt_dir, f"iteration_{iteration}", "point_cloud.ply"
-    )
+    direct_checkpt_path = os.path.join(model_path, "point_cloud.ply")
+    if os.path.isdir(checkpt_dir):
+        if iteration == -1:
+            iteration = searchForMaxIteration(checkpt_dir)
+        checkpt_path = os.path.join(
+            checkpt_dir, f"iteration_{iteration}", "point_cloud.ply"
+        )
+    elif os.path.exists(direct_checkpt_path):
+        checkpt_path = direct_checkpt_path
+    else:
+        raise FileNotFoundError(
+            f"Could not find Gaussian checkpoint under '{model_path}'. "
+            "Expected either point_cloud/iteration_*/point_cloud.ply or point_cloud.ply."
+        )
     gaussians = GaussianModel(sh_degree)
     gaussians.load_ply(checkpt_path)
     return gaussians
@@ -460,6 +469,8 @@ def main():
     interactions = list(scenario.get("interactions", [])) + list(language_result["interactions"])
     compiled_bcs = compile_interactions(interactions, object_meta)
     boundary_conditions = list(base_bc_params) + compiled_bcs
+    if not any(bc.get("type") == "bounding_box" for bc in boundary_conditions):
+        boundary_conditions.insert(0, {"type": "bounding_box"})
 
     background_scene = load_background_scene(
         scenario.get("background"),
