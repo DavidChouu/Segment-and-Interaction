@@ -1,0 +1,52 @@
+{
+    "base_config": "config/ficus_config.json",
+    "default_model_path": "./model/ficus_whitebg-trained/",
+    "time_overrides": {
+        "frame_num": 120,
+        "frame_dt": 0.04
+    },
+    "camera": {
+        "orbit": {
+            "azimuth_deg": 90.0
+        }
+    },
+    "background": {
+        "model_path": "./model/ficus_whitebg-trained/",
+        "config": "config/ficus_config.json",
+        "remove_object_regions": true
+    },
+    "objects": [
+        {
+            "id": "left_ficus",
+            "config": "config/ficus_config.json",
+            "placement": {
+                "translation": [
+                    -0.45,
+                    0.0,
+                    0.0
+                ]
+            }
+        },
+        {
+            "id": "right_ficus",
+            "config": "config/ficus_config.json",
+            "placement": {
+                "translation": [
+                    0.45,
+                    0.0,
+                    0.0
+                ]
+            }
+        }
+    ],
+    "interactions": [
+        {
+            "type": "object_collision",
+            "object_a": "left_ficus",
+            "object_b": "right_ficus",
+            "speed": 0.9,
+            "start_time": 0.0,
+            "end_time": 0.8
+        }
+    ]
+}

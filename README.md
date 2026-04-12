@@ -55,6 +55,70 @@ Hopefully, you will see a video result like this:
 
 <img src="./demo/ficus.gif" width="300"/>
 
+## Interaction Branch Extensions
+This branch now also includes a higher-level interaction runner for richer scene control:
+
+- multi-object assembly in one MPM scene for collision-style interaction;
+- config-driven drag / impulse / translation events;
+- natural-language-to-interaction parsing entry points;
+- orbit camera shots such as rotating 90 degrees around a center while keeping height;
+- static background rendering with optional removal of the simulated object regions to reduce the "object leaves a copy behind" artifact.
+
+### Run an Interaction Scenario
+Use the new runner:
+
+```shell
+python interaction_simulation.py \
+  --scenario config/interaction_demo.json \
+  --output_path output_interaction \
+  --render_img \
+  --compile_video \
+  --white_bg
+```
+
+You can also inject a short natural language instruction at runtime:
+
+```shell
+python interaction_simulation.py \
+  --scenario config/interaction_demo.json \
+  --output_path output_interaction_text \
+  --render_img \
+  --compile_video \
+  --interaction_text "让 left_ficus 和 right_ficus 碰撞，同时镜头逆时针旋转90度"
+```
+
+### Scenario File Structure
+The interaction scenario is a JSON file with these main fields:
+
+- `base_config`: a normal PhysGaussian config used as the default physics / camera template.
+- `default_model_path`: optional default model path for objects.
+- `time_overrides`: optional overrides for `frame_num`, `frame_dt`, `substep_dt`, etc.
+- `camera`: extra camera controls. `orbit.azimuth_deg=90` produces a 90 degree orbit shot.
+- `background`: optional static scene to render behind the simulated objects. `remove_object_regions=true` removes particles inside the object `sim_area` boxes when the object and background share the same source model.
+- `objects`: the simulated objects. Each object can have its own `id`, `model_path`, `config`, `placement`, and optional `material_override`.
+- `interactions`: high-level events compiled into boundary conditions.
+- `interaction_text`: optional natural-language instruction parsed before the simulation starts.
+
+### Supported High-Level Interactions
+Currently supported event types are:
+
+- `object_translation`
+- `object_impulse`
+- `object_collision`
+- `mouse_drag`
+
+For `mouse_drag`, provide a 3D `path` in MPM space and a time interval. The runner converts it into piecewise translation constraints. This gives you an offline "drag object along a trajectory" interface that is easy to connect to a GUI later.
+
+### Natural Language Hook
+The built-in natural language parser is rule-based and currently focuses on:
+
+- gravity changes;
+- collision requests;
+- drag-direction requests;
+- camera orbit requests.
+
+If you already have a stronger language model pipeline, set `language_interface.mode` to `command` in the scenario JSON and return a JSON payload with `interactions`, `material_overrides`, and `camera_overrides`. This keeps the interaction layer compatible with a future dedicated language-to-physics model.
+
 ## Custom Dynamics
 To generate custom dynamics, follow these guidelines:
 

@@ -44,7 +44,7 @@ ti.init(arch=ti.cuda, device_memory_GB=4.0)
 
 
 class PipelineParamsNoparse:
-    """Same as PipelineParams but without argument parser."""
+    """Same as PipelineParams but wi+thout argument parser."""
 
     def __init__(self):
         self.convert_SHs_python = False
