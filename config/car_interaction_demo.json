@@ -2,7 +2,7 @@
     "base_config": "config/car_collision_config.json",
     "default_model_path": "./model/car",
     "time_overrides": {
-        "frame_num": 200,
+        "frame_num": 180,
         "frame_dt": 0.04
     },
     "camera": {
@@ -20,6 +20,7 @@
             "config": "config/car_collision_config.json",
             "placement": {
                 "translation": [-0.08, 0.0, 0.0]
+                
             }
         },
         {
@@ -36,9 +37,9 @@
             "object_a": "car_left",
             "object_b": "car_right",
             "axis": [1.0, 0.0, 0.0],
-            "speed": 0.06,
+            "speed": 0.03,
             "start_time": 0.0,
-            "end_time": 3.6
+            "end_time": 3.2
         }
     ]
 }

@@ -4,6 +4,7 @@ sys.path.append("gaussian-splatting")
 
 import argparse
 import os
+import glob
 import cv2
 import torch
 import numpy as np
@@ -379,6 +380,14 @@ def main():
 
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
+    elif args.render_img:
+        # Remove stale rendered frames so fixed-camera reruns do not get mixed with
+        # older image sequences in the same output directory.
+        for stale_frame in glob.glob(os.path.join(args.output_path, "*.png")):
+            os.remove(stale_frame)
+        stale_video = os.path.join(args.output_path, "output.mp4")
+        if os.path.exists(stale_video):
+            os.remove(stale_video)
 
     scenario = load_json(args.scenario)
     base_config = scenario["base_config"]

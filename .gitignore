@@ -7,3 +7,5 @@ output
 *.jpg
 model
 log
+clip_model/
+blip_base_model/
