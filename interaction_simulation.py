@@ -1,6 +1,10 @@
 import sys
+from pathlib import Path
 
-sys.path.append("gaussian-splatting")
+PROJECT_ROOT = Path(__file__).resolve().parent
+GAUSSIAN_SPLATTING_ROOT = PROJECT_ROOT / "gaussian-splatting"
+if str(GAUSSIAN_SPLATTING_ROOT) not in sys.path:
+    sys.path.insert(0, str(GAUSSIAN_SPLATTING_ROOT))
 
 import argparse
 import os
@@ -8,6 +12,7 @@ import glob
 import cv2
 import torch
 import numpy as np
+import taichi as ti
 from copy import deepcopy
 from tqdm import tqdm
 
@@ -17,8 +22,7 @@ from utils.system_utils import searchForMaxIteration
 from mpm_solver_warp.engine_utils import *
 from mpm_solver_warp.mpm_solver_warp import MPM_Simulator_WARP
 import warp as wp
-
-from particle_filling.filling import *
+from particle_filling.filling import get_particle_volume
 
 from utils.decode_param import decode_param_json, set_boundary_conditions
 from utils.transformation_utils import *
@@ -208,6 +212,8 @@ def load_dynamic_object(object_spec, pipeline, debug=False):
     device = "cuda:0"
     filling_params = preprocessing_params["particle_filling"]
     if filling_params is not None:
+        from particle_filling.filling import fill_particles, init_filled_particles
+
         mpm_init_pos = fill_particles(
             pos=transformed_pos,
             opacity=init_opacity,
@@ -361,10 +367,31 @@ def build_camera_context(camera_section, camera_params, frame_num, object_states
     worldspace_up = map_mpm_point_to_world(
         up_mpm, reference_object, keep_placement=False
     )
+    viewpoint_center_worldspace = np.asarray(viewpoint_center_worldspace, dtype=np.float32)
+    worldspace_up = np.asarray(worldspace_up, dtype=np.float32)
     world_space_vertical_axis = worldspace_up - viewpoint_center_worldspace
     vertical, h1, h2 = generate_local_coord(world_space_vertical_axis)
     observant_coordinates = np.column_stack((h1, h2, vertical))
     return merged_camera_params, viewpoint_center_worldspace, observant_coordinates
+
+
+def get_template_camera(camera_section, merged_camera_params, viewpoint_center_worldspace, observant_coordinates, current_frame):
+    camera_template = camera_section.get("template")
+    if camera_template is None:
+        return None
+    return get_camera_view_from_template(
+        camera_template=camera_template,
+        center_view_world_space=viewpoint_center_worldspace,
+        observant_coordinates=observant_coordinates,
+        init_azimuthm=merged_camera_params["init_azimuthm"],
+        init_elevation=merged_camera_params["init_elevation"],
+        init_radius=merged_camera_params["init_radius"],
+        move_camera=merged_camera_params["move_camera"],
+        current_frame=current_frame,
+        delta_a=merged_camera_params["delta_a"],
+        delta_e=merged_camera_params["delta_e"],
+        delta_r=merged_camera_params["delta_r"],
+    )
 
 
 def main():
@@ -391,6 +418,7 @@ def main():
 
     scenario = load_json(args.scenario)
     base_config = scenario["base_config"]
+    image_postprocess = scenario.get("image_postprocess", {})
     (
         material_params,
         base_bc_params,
@@ -556,21 +584,29 @@ def main():
     height = None
     width = None
     for frame in tqdm(range(frame_num)):
-        current_camera = get_camera_view(
-            camera_source_model_path,
-            default_camera_index=merged_camera_params["default_camera_index"],
-            center_view_world_space=viewpoint_center_worldspace,
-            observant_coordinates=observant_coordinates,
-            show_hint=merged_camera_params["show_hint"],
-            init_azimuthm=merged_camera_params["init_azimuthm"],
-            init_elevation=merged_camera_params["init_elevation"],
-            init_radius=merged_camera_params["init_radius"],
-            move_camera=merged_camera_params["move_camera"],
-            current_frame=frame,
-            delta_a=merged_camera_params["delta_a"],
-            delta_e=merged_camera_params["delta_e"],
-            delta_r=merged_camera_params["delta_r"],
+        current_camera = get_template_camera(
+            scenario_camera_section,
+            merged_camera_params,
+            viewpoint_center_worldspace,
+            observant_coordinates,
+            frame,
         )
+        if current_camera is None:
+            current_camera = get_camera_view(
+                camera_source_model_path,
+                default_camera_index=merged_camera_params["default_camera_index"],
+                center_view_world_space=viewpoint_center_worldspace,
+                observant_coordinates=observant_coordinates,
+                show_hint=merged_camera_params["show_hint"],
+                init_azimuthm=merged_camera_params["init_azimuthm"],
+                init_elevation=merged_camera_params["init_elevation"],
+                init_radius=merged_camera_params["init_radius"],
+                move_camera=merged_camera_params["move_camera"],
+                current_frame=frame,
+                delta_a=merged_camera_params["delta_a"],
+                delta_e=merged_camera_params["delta_e"],
+                delta_r=merged_camera_params["delta_r"],
+            )
         rasterize = initialize_resterize(
             current_camera,
             render_reference,
@@ -634,8 +670,10 @@ def main():
             rotations=None,
             cov3D_precomp=cov3d,
         )
-        cv2_img = rendering.permute(1, 2, 0).detach().cpu().numpy()
+        cv2_img = np.asarray(rendering.permute(1, 2, 0).detach().cpu().numpy())
         cv2_img = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
+        if image_postprocess.get("rotate_180", False):
+            cv2_img = cv2.rotate(cv2_img, cv2.ROTATE_180)
         if height is None or width is None:
             height = cv2_img.shape[0] // 2 * 2
             width = cv2_img.shape[1] // 2 * 2

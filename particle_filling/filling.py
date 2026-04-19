@@ -2,7 +2,10 @@ import torch
 import os
 import numpy as np
 import taichi as ti
-import mcubes
+try:
+    import mcubes
+except Exception:
+    mcubes = None
 
 # 1. densify grids
 # 2. identify grids whose density is larger than some threshold
@@ -350,6 +353,8 @@ def fill_particles(
 
     # smooth density_field
     if smooth:
+        if mcubes is None:
+            raise ImportError("mcubes is required when particle_filling.smooth=True")
         df = grid_density.to_numpy()
         smoothed_df = mcubes.smooth(df, method="constrained", max_iters=500).astype(
             np.float32

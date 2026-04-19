@@ -181,3 +181,52 @@ def get_camera_view(
             image_name="fake",
             uid=0,
         )
+
+
+def get_camera_view_from_template(
+    camera_template,
+    center_view_world_space,
+    observant_coordinates,
+    init_azimuthm,
+    init_elevation,
+    init_radius,
+    move_camera=False,
+    current_frame=0,
+    delta_a=0.0,
+    delta_e=0.0,
+    delta_r=0.0,
+):
+    position, rotation = get_camera_position_and_rotation(
+        init_azimuthm + current_frame * delta_a if move_camera else init_azimuthm,
+        init_elevation + current_frame * delta_e if move_camera else init_elevation,
+        init_radius + current_frame * delta_r if move_camera else init_radius,
+        center_view_world_space,
+        observant_coordinates,
+    )
+
+    tmp = np.zeros((4, 4))
+    tmp[:3, :3] = rotation
+    tmp[:3, 3] = position
+    tmp[3, 3] = 1
+    C2W = np.linalg.inv(tmp)
+    R = C2W[:3, :3].transpose()
+    T = C2W[:3, 3]
+
+    width = int(camera_template["width"])
+    height = int(camera_template["height"])
+    fx = float(camera_template["fx"])
+    fy = float(camera_template["fy"])
+    fovx = focal2fov(fx, width)
+    fovy = focal2fov(fy, height)
+
+    return GSCamera(
+        colmap_id=0,
+        R=R,
+        T=T,
+        FoVx=fovx,
+        FoVy=fovy,
+        image=torch.zeros((3, height, width)),
+        gt_alpha_mask=None,
+        image_name="template",
+        uid=0,
+    )

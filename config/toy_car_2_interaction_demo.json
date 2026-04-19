@@ -1,0 +1,59 @@
+{
+    "base_config": "config/toy_car_2_collision_config.json",
+    "time_overrides": {
+        "frame_num": 180,
+        "frame_dt": 0.04
+    },
+    "image_postprocess": {
+        "rotate_180": true
+    },
+    "camera": {
+        "template": {
+            "width": 1024,
+            "height": 1024,
+            "fx": 1200.0,
+            "fy": 1200.0
+        },
+        "center_world_space": [0.21361247, 1.1597454, 1.2578225],
+        "vertical_upward_axis_world": [0.0, 1.0, 0.0],
+        "overrides": {
+            "default_camera_index": -1,
+            "move_camera": false,
+            "init_azimuthm": -165.0,
+            "init_elevation": 8.0,
+            "init_radius": 7.2,
+            "delta_a": 0.0,
+            "delta_e": 0.0,
+            "delta_r": 0.0
+        }
+    },
+    "objects": [
+        {
+            "id": "yellow_toy_car",
+            "model_path": "./toy_car_2/toy_car_2/object_yellow_toy_car",
+            "config": "config/toy_car_2_collision_config.json",
+            "placement": {
+                "translation": [-0.16, 0.0, 0.0]
+            }
+        },
+        {
+            "id": "black_toy_car",
+            "model_path": "./toy_car_2/toy_car_2/object_black_toy_car",
+            "config": "config/toy_car_2_collision_config.json",
+            "placement": {
+                "translation": [0.16, 0.0, 0.0]
+            }
+        }
+    ],
+    "interactions": [
+        {
+            "type": "object_collision",
+            "object_a": "yellow_toy_car",
+            "object_b": "black_toy_car",
+            "axis": [1.0, 0.0, 0.0],
+            "speed": 0.02,
+            "start_time": 0.0,
+            "end_time": 4.0
+        }
+    ]
+}
