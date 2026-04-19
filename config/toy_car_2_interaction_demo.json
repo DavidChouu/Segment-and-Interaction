@@ -1,7 +1,7 @@
 {
     "base_config": "config/toy_car_2_collision_config.json",
     "time_overrides": {
-        "frame_num": 180,
+        "frame_num": 220,
         "frame_dt": 0.04
     },
     "image_postprocess": {
@@ -33,7 +33,7 @@
             "model_path": "./toy_car_2/toy_car_2/object_yellow_toy_car",
             "config": "config/toy_car_2_collision_config.json",
             "placement": {
-                "translation": [-0.16, 0.0, 0.0]
+                "translation": [-0.19, 0.0, 0.0]
             }
         },
         {
@@ -41,7 +41,7 @@
             "model_path": "./toy_car_2/toy_car_2/object_black_toy_car",
             "config": "config/toy_car_2_collision_config.json",
             "placement": {
-                "translation": [0.16, 0.0, 0.0]
+                "translation": [0.19, 0.0, 0.0]
             }
         }
     ],
@@ -51,9 +51,12 @@
             "object_a": "yellow_toy_car",
             "object_b": "black_toy_car",
             "axis": [1.0, 0.0, 0.0],
-            "speed": 0.02,
-            "start_time": 0.0,
-            "end_time": 4.0
+            "speed": 0.03,
+            "start_time": 0.4,
+            "end_time": 3.2,
+            "rebound_speed": 0.018,
+            "rebound_start_time": 3.35,
+            "rebound_end_time": 5.0
         }
     ]
 }

@@ -251,6 +251,34 @@ def compile_interactions(interactions, object_meta):
                     },
                 ]
             )
+            rebound_speed = interaction.get("rebound_speed")
+            rebound_end_time = interaction.get("rebound_end_time")
+            if rebound_speed is not None and rebound_end_time is not None:
+                rebound_start_time = interaction.get(
+                    "rebound_start_time", interaction["end_time"]
+                )
+                rebound_velocity_a = [-rebound_speed * value for value in axis]
+                rebound_velocity_b = [rebound_speed * value for value in axis]
+                boundary_conditions.extend(
+                    [
+                        {
+                            "type": "enforce_particle_translation",
+                            "point": meta_a["center"],
+                            "size": meta_a["size"],
+                            "velocity": rebound_velocity_a,
+                            "start_time": rebound_start_time,
+                            "end_time": rebound_end_time,
+                        },
+                        {
+                            "type": "enforce_particle_translation",
+                            "point": meta_b["center"],
+                            "size": meta_b["size"],
+                            "velocity": rebound_velocity_b,
+                            "start_time": rebound_start_time,
+                            "end_time": rebound_end_time,
+                        },
+                    ]
+                )
         elif interaction_type == "mouse_drag":
             meta = object_meta[interaction["object_id"]]
             drag_path = interaction["path"]
