@@ -1,5 +1,6 @@
 {
     "base_config": "config/toy_car_2_collision_config.json",
+    "render_space": "mpm",
     "time_overrides": {
         "frame_num": 220,
         "frame_dt": 0.04
@@ -14,14 +15,15 @@
             "fx": 1200.0,
             "fy": 1200.0
         },
-        "center_world_space": [0.21361247, 1.1597454, 1.2578225],
-        "vertical_upward_axis_world": [0.0, 1.0, 0.0],
+        "center_mpm_space": [1.0, 1.0, 1.0],
+        "vertical_upward_axis_mpm": [0.0, 1.0, 0.0],
+        "horizontal_reference_mpm": [0.0, 0.0, 1.0],
         "overrides": {
             "default_camera_index": -1,
             "move_camera": false,
-            "init_azimuthm": -165.0,
-            "init_elevation": 8.0,
-            "init_radius": 7.2,
+            "init_azimuthm": 0.0,
+            "init_elevation": 2.0,
+            "init_radius": 2.75,
             "delta_a": 0.0,
             "delta_e": 0.0,
             "delta_r": 0.0
@@ -33,7 +35,7 @@
             "model_path": "./toy_car_2/toy_car_2/object_yellow_toy_car",
             "config": "config/toy_car_2_collision_config.json",
             "placement": {
-                "translation": [-0.28, 0.0, 0.0]
+                "translation": [-0.26, 0.0, 0.0]
             }
         },
         {
@@ -41,22 +43,38 @@
             "model_path": "./toy_car_2/toy_car_2/object_black_toy_car",
             "config": "config/toy_car_2_collision_config.json",
             "placement": {
-                "translation": [0.28, 0.0, 0.0]
+                "translation": [0.26, 0.0, 0.0]
             }
         }
     ],
     "interactions": [
         {
-            "type": "object_collision",
-            "object_a": "yellow_toy_car",
-            "object_b": "black_toy_car",
-            "axis": [-1.0, 0.0, 0.0],
-            "speed": 0.028,
+            "type": "object_translation",
+            "object_id": "yellow_toy_car",
+            "velocity": [0.02, 0.0, 0.0],
             "start_time": 0.8,
-            "end_time": 4.2,
-            "rebound_speed": 0.04,
-            "rebound_start_time": 4.28,
-            "rebound_end_time": 5.4
+            "end_time": 3.6
+        },
+        {
+            "type": "object_translation",
+            "object_id": "black_toy_car",
+            "velocity": [-0.02, 0.0, 0.0],
+            "start_time": 0.8,
+            "end_time": 3.6
+        },
+        {
+            "type": "object_translation",
+            "object_id": "yellow_toy_car",
+            "velocity": [-0.016, 0.0, 0.0],
+            "start_time": 3.75,
+            "end_time": 5.15
+        },
+        {
+            "type": "object_translation",
+            "object_id": "black_toy_car",
+            "velocity": [0.016, 0.0, 0.0],
+            "start_time": 3.75,
+            "end_time": 5.15
         }
     ]
 }

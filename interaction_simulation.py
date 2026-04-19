@@ -340,10 +340,43 @@ def load_background_scene(background_spec, pipeline, object_specs):
     }
 
 
-def build_camera_context(camera_section, camera_params, frame_num, object_states):
+def build_camera_context(
+    camera_section,
+    camera_params,
+    frame_num,
+    object_states,
+    render_in_mpm_space=False,
+):
     merged_camera_params = merge_dict(camera_params, camera_section.get("overrides", {}))
     orbit_config = camera_section.get("orbit")
     merged_camera_params = apply_camera_orbit(merged_camera_params, orbit_config, frame_num)
+
+    if render_in_mpm_space:
+        viewpoint_center = np.array(
+            camera_section.get(
+                "center_mpm_space",
+                merged_camera_params["mpm_space_viewpoint_center"],
+            ),
+            dtype=np.float32,
+        )
+        vertical_axis = np.array(
+            camera_section.get(
+                "vertical_upward_axis_mpm",
+                merged_camera_params["mpm_space_vertical_upward_axis"],
+            ),
+            dtype=np.float32,
+        )
+        horizontal_reference = camera_section.get("horizontal_reference_mpm")
+        if horizontal_reference is not None:
+            h1 = np.array(horizontal_reference, dtype=np.float32)
+            vertical = vertical_axis / np.linalg.norm(vertical_axis)
+            h1 = h1 - np.dot(h1, vertical) * vertical
+            h1 = h1 / np.linalg.norm(h1)
+            h2 = np.cross(h1, vertical)
+        else:
+            vertical, h1, h2 = generate_local_coord(vertical_axis)
+        observant_coordinates = np.column_stack((h1, h2, vertical))
+        return merged_camera_params, viewpoint_center, observant_coordinates
 
     if "center_world_space" in camera_section:
         viewpoint_center_worldspace = np.array(camera_section["center_world_space"], dtype=np.float32)
@@ -419,6 +452,7 @@ def main():
     scenario = load_json(args.scenario)
     base_config = scenario["base_config"]
     image_postprocess = scenario.get("image_postprocess", {})
+    render_in_mpm_space = scenario.get("render_space") == "mpm"
     (
         material_params,
         base_bc_params,
@@ -562,6 +596,7 @@ def main():
         camera_params,
         time_params["frame_num"],
         object_states,
+        render_in_mpm_space=render_in_mpm_space,
     )
 
     frame_dt = time_params["frame_dt"]
@@ -634,9 +669,10 @@ def main():
             object_pos = solver_pos[start:end][: object_state["gs_num"]]
             object_cov = solver_cov[start:end][: object_state["gs_num"]]
             object_rot = solver_rot[start:end][: object_state["gs_num"]]
-            object_pos, object_cov = transform_object_to_world(
-                object_pos, object_cov, object_state
-            )
+            if not render_in_mpm_space:
+                object_pos, object_cov = transform_object_to_world(
+                    object_pos, object_cov, object_state
+                )
             render_positions.append(object_pos)
             render_covariances.append(object_cov)
             render_rotations.append(object_rot)
