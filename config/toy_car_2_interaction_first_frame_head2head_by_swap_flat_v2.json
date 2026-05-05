@@ -35,9 +35,9 @@
             "model_path": "./toy_car_2/toy_car_2/object_yellow_toy_car",
             "config": "config/toy_car_2_collision_config.json",
             "placement": {
-                "rotation_degree": [-3.0],
+                "rotation_degree": [8.0],
                 "rotation_axis": [2],
-                "translation": [0.26, 0.0, 0.0]
+                "translation": [0.26, 0.08, 0.0]
             }
         },
         {
