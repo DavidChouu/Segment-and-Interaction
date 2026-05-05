@@ -52,6 +52,12 @@ class PipelineParamsNoparse:
 
 
 def load_checkpoint(model_path, sh_degree=3, iteration=-1):
+    if model_path.endswith(".ply") and os.path.isfile(model_path):
+        checkpt_path = model_path
+        gaussians = GaussianModel(sh_degree)
+        gaussians.load_ply(checkpt_path)
+        return gaussians
+
     checkpt_dir = os.path.join(model_path, "point_cloud")
     direct_checkpt_path = os.path.join(model_path, "point_cloud.ply")
     if os.path.isdir(checkpt_dir):
@@ -147,6 +153,41 @@ def map_mpm_point_to_world(point, object_state, keep_placement=True):
     return np.squeeze(world_point.detach().cpu().numpy(), 0)
 
 
+def apply_shared_layout_normalization(object_states, global_scale_value):
+    raw_positions = [state["raw_scene_pos"] for state in object_states]
+    merged_positions = torch.cat(raw_positions, dim=0)
+    min_pos = torch.min(merged_positions, dim=0)[0]
+    max_pos = torch.max(merged_positions, dim=0)[0]
+    max_diff = torch.max(max_pos - min_pos)
+    if torch.abs(max_diff) < 1e-8:
+        raise ValueError("Shared normalization failed because the merged layout has near-zero extent.")
+
+    global_mean = (min_pos + max_pos) / 2.0
+    global_scale = torch.tensor(global_scale_value, dtype=torch.float32, device="cuda") / max_diff
+    tensor111 = torch.tensor([1.0, 1.0, 1.0], dtype=torch.float32, device="cuda")
+
+    for object_state in object_states:
+        object_state["uses_shared_layout_normalization"] = True
+        object_state["shared_layout_scale_origin"] = global_scale
+        object_state["shared_layout_mean_pos"] = global_mean
+        object_state["scale_origin"] = global_scale
+        object_state["original_mean_pos"] = global_mean
+
+        normalized_pos = (object_state["raw_scene_pos"] - global_mean) * global_scale + tensor111
+        normalized_cov = object_state["raw_scene_cov"] * (global_scale * global_scale)
+
+        object_state["mpm_init_pos"] = normalized_pos
+        object_state["mpm_init_cov"] = normalized_cov
+        object_state["gs_num"] = normalized_pos.shape[0]
+
+        min_object = torch.min(normalized_pos, dim=0)[0]
+        max_object = torch.max(normalized_pos, dim=0)[0]
+        object_state["center"] = ((min_object + max_object) * 0.5).detach().cpu().tolist()
+        object_state["size"] = ((max_object - min_object) * 0.5 + 1e-3).detach().cpu().tolist()
+
+    return object_states
+
+
 def load_dynamic_object(object_spec, pipeline, debug=False):
     config_path = object_spec["config"]
     model_path = object_spec["model_path"]
@@ -195,13 +236,21 @@ def load_dynamic_object(object_spec, pipeline, debug=False):
     init_opacity = init_opacity[selection_mask, :]
     init_shs = init_shs[selection_mask, :]
 
+    placement_rotations, placement_translation = parse_object_placement(object_spec)
+    raw_scene_cov = apply_cov_rotations(init_cov, rotation_matrices)
+    raw_scene_pos, raw_scene_cov = apply_object_placement(
+        rotated_pos,
+        raw_scene_cov,
+        placement_rotations,
+        placement_translation,
+    )
+
     transformed_pos, scale_origin, original_mean_pos = transform2origin(
         rotated_pos, torch.tensor(preprocessing_params["scale"], device="cuda")
     )
     transformed_pos = shift2center111(transformed_pos)
     init_cov = apply_cov_rotations(init_cov, rotation_matrices)
     init_cov = scale_origin * scale_origin * init_cov
-    placement_rotations, placement_translation = parse_object_placement(object_spec)
     transformed_pos, init_cov = apply_object_placement(
         transformed_pos,
         init_cov,
@@ -277,6 +326,10 @@ def load_dynamic_object(object_spec, pipeline, debug=False):
         "unselected_shs": unselected_shs,
         "selection_sim_area": sim_area,
         "debug": debug,
+        "raw_scene_pos": raw_scene_pos,
+        "raw_scene_cov": raw_scene_cov,
+        "uses_shared_layout_normalization": False,
+        "particle_filling_enabled": filling_params is not None,
     }
 
 
@@ -454,11 +507,12 @@ def main():
     base_config = scenario["base_config"]
     image_postprocess = scenario.get("image_postprocess", {})
     render_in_mpm_space = scenario.get("render_space") == "mpm"
+    shared_layout_normalization = scenario.get("shared_layout_normalization", False)
     (
         material_params,
         base_bc_params,
         time_params,
-        _preprocessing_params,
+        base_preprocessing_params,
         camera_params,
     ) = decode_param_json(base_config)
 
@@ -485,6 +539,13 @@ def main():
     object_states = [load_dynamic_object(spec, pipeline, debug=args.debug) for spec in object_specs]
     if len(object_states) == 0:
         raise ValueError("At least one object is required in the interaction scenario.")
+    if shared_layout_normalization:
+        if not render_in_mpm_space:
+            raise ValueError("shared_layout_normalization currently requires render_space to be set to 'mpm'.")
+        if any(state["particle_filling_enabled"] for state in object_states):
+            raise ValueError("shared_layout_normalization does not currently support particle_filling.")
+        shared_scale_value = scenario.get("shared_layout_scale", base_preprocessing_params["scale"])
+        object_states = apply_shared_layout_normalization(object_states, shared_scale_value)
 
     sh_degree_signature = (
         object_states[0]["gaussians"].active_sh_degree,

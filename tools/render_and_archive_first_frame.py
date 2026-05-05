@@ -15,6 +15,11 @@ def main():
         help="Scenario json to render.",
     )
     parser.add_argument(
+        "--entry-script",
+        default="interaction_simulation.py",
+        help="Simulation entry script to run.",
+    )
+    parser.add_argument(
         "--output-path",
         default="tmp_first_frame_render",
         help="Temporary render output directory. This folder is overwritten; archived images go to --gallery.",
@@ -34,7 +39,7 @@ def main():
     root = Path.cwd()
     render_cmd = [
         args.python_bin,
-        "interaction_simulation.py",
+        args.entry_script,
         "--scenario",
         args.scenario,
         "--output_path",
