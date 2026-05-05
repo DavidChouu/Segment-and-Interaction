@@ -22,7 +22,7 @@
             "default_camera_index": -1,
             "move_camera": true,
             "init_azimuthm": -165.0,
-            "init_elevation": 8.0,
+            "init_elevation": 60.0,
             "init_radius": 3.0,
             "delta_a": 22.5,
             "delta_e": 0.0,

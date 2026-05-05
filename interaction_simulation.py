@@ -1,3 +1,5 @@
+# 多个物体怎么放进同一个场景里交互
+# 怎么编排镜头、怎么渲染出来
 import sys
 from pathlib import Path
 

@@ -1,3 +1,4 @@
+# 单个物体怎么模拟
 import sys
 
 sys.path.append("gaussian-splatting")
