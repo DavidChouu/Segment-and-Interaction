@@ -6,7 +6,7 @@
         "frame_dt": 0.04
     },
     "image_postprocess": {
-        "rotate_180": true
+        "rotate_180": false
     },
     "camera": {
         "template": {
@@ -22,18 +22,18 @@
         ],
         "vertical_upward_axis_mpm": [
             0.0,
-            1.0,
+            -1.0,
             0.0
         ],
         "horizontal_reference_mpm": [
             0.0,
-            0.0,
-            1.0
+            -0.0,
+            -1.0
         ],
         "overrides": {
             "default_camera_index": -1,
             "move_camera": false,
-            "init_azimuthm": -181.0,
+            "init_azimuthm": -180,
             "init_elevation": 40.0,
             "init_radius": 3.0,
             "delta_a": 0.0,
@@ -52,7 +52,7 @@
                 "translation": [
                     0.0,
                     0.0,
-                    0.0
+                    2.0
                 ]
             }
         },
@@ -118,5 +118,5 @@
         }
     ],
     "shared_layout_normalization": true,
-    "shared_layout_scale": 1.0
+    "shared_layout_scale": 2.0
 }
