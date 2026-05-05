@@ -52,7 +52,7 @@
                 "translation": [
                     0.0,
                     0.0,
-                    2.0
+                    0.8
                 ]
             }
         },
@@ -76,47 +76,53 @@
             "type": "object_translation",
             "object_id": "yellow_toy_car",
             "velocity": [
-                -0.2,
+                -0.048,
                 0.0,
-                0.0
+                -0.01
             ],
-            "start_time": 0.8,
-            "end_time": 3.6
+            "start_time": 0.6,
+            "end_time": 5.25
         },
         {
             "type": "object_translation",
             "object_id": "black_toy_car",
             "velocity": [
-                0.2,
+                0.048,
                 0.0,
-                0.0
+                0.01
             ],
-            "start_time": 0.8,
-            "end_time": 3.6
+            "start_time": 0.6,
+            "end_time": 5.25
         },
         {
             "type": "object_translation",
             "object_id": "yellow_toy_car",
             "velocity": [
-                0.3,
+                0.006,
                 0.0,
-                0.0
+                0.001
             ],
-            "start_time": 3.75,
-            "end_time": 5.15
+            "start_time": 5.35,
+            "end_time": 5.45
         },
         {
             "type": "object_translation",
             "object_id": "black_toy_car",
             "velocity": [
-                -0.3,
+                -0.006,
                 0.0,
-                0.0
+                -0.001
             ],
-            "start_time": 3.75,
-            "end_time": 5.15
+            "start_time": 5.35,
+            "end_time": 5.45
         }
     ],
     "shared_layout_normalization": true,
-    "shared_layout_scale": 2.0
+    "shared_layout_scale": 2.0,
+    "simulation_overrides": {
+        "E": 1200000.0,
+        "yield_stress": 30000000.0,
+        "grid_v_damping_scale": 0.998,
+        "rpic_damping": 0.12
+    }
 }

@@ -1,0 +1,7 @@
+folder,name,kind,yellow_translation,black_translation,yellow_velocity,black_velocity
+0005,more_displacement_x_0p03,displacement_only,"[0.0, 0.0, 2.0]","[0.0, 0.0, 0.0]","[-0.03, 0.0, 0.0]","[0.03, 0.0, 0.0]"
+0006,more_displacement_x_0p04,displacement_only,"[0.0, 0.0, 2.0]","[0.0, 0.0, 0.0]","[-0.04, 0.0, 0.0]","[0.04, 0.0, 0.0]"
+0007,alignment_with_z_push_soft,alignment_only,"[0.0, 0.0, 2.0]","[0.0, 0.0, 0.0]","[-0.02, 0.0, -0.015]","[0.02, 0.0, 0.015]"
+0008,alignment_with_z_push_strong,alignment_only,"[0.0, 0.0, 2.0]","[0.0, 0.0, 0.0]","[-0.02, 0.0, -0.025]","[0.02, 0.0, 0.025]"
+0009,combo_more_x_and_z,combo,"[0.0, 0.0, 2.0]","[0.0, 0.0, 0.0]","[-0.03, 0.0, -0.02]","[0.03, 0.0, 0.02]"
+0010,combo_less_offset_more_x,combo,"[0.0, 0.0, 1.5]","[0.0, 0.0, 0.0]","[-0.03, 0.0, -0.01]","[0.03, 0.0, 0.01]"

@@ -2,7 +2,7 @@
     "base_config": "config/toy_car_2_collision_config.json",
     "render_space": "mpm",
     "time_overrides": {
-        "frame_num": 1,
+        "frame_num": 140,
         "frame_dt": 0.04
     },
     "image_postprocess": {

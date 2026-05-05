@@ -52,7 +52,7 @@
                 "translation": [
                     0.0,
                     0.0,
-                    2.0
+                    1.2
                 ]
             }
         },
@@ -76,47 +76,31 @@
             "type": "object_translation",
             "object_id": "yellow_toy_car",
             "velocity": [
-                -0.2,
+                -0.046,
                 0.0,
-                0.0
+                -0.012
             ],
-            "start_time": 0.8,
-            "end_time": 3.6
+            "start_time": 0.6,
+            "end_time": 5.55
         },
         {
             "type": "object_translation",
             "object_id": "black_toy_car",
             "velocity": [
-                0.2,
+                0.046,
                 0.0,
-                0.0
+                0.012
             ],
-            "start_time": 0.8,
-            "end_time": 3.6
-        },
-        {
-            "type": "object_translation",
-            "object_id": "yellow_toy_car",
-            "velocity": [
-                0.3,
-                0.0,
-                0.0
-            ],
-            "start_time": 3.75,
-            "end_time": 5.15
-        },
-        {
-            "type": "object_translation",
-            "object_id": "black_toy_car",
-            "velocity": [
-                -0.3,
-                0.0,
-                0.0
-            ],
-            "start_time": 3.75,
-            "end_time": 5.15
+            "start_time": 0.6,
+            "end_time": 5.55
         }
     ],
     "shared_layout_normalization": true,
-    "shared_layout_scale": 2.0
+    "shared_layout_scale": 2.0,
+    "simulation_overrides": {
+        "E": 800000.0,
+        "yield_stress": 20000000.0,
+        "grid_v_damping_scale": 0.996,
+        "rpic_damping": 0.16
+    }
 }

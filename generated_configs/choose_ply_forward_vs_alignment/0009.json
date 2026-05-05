@@ -76,9 +76,9 @@
             "type": "object_translation",
             "object_id": "yellow_toy_car",
             "velocity": [
-                -0.2,
+                -0.03,
                 0.0,
-                0.0
+                -0.02
             ],
             "start_time": 0.8,
             "end_time": 3.6
@@ -87,9 +87,9 @@
             "type": "object_translation",
             "object_id": "black_toy_car",
             "velocity": [
-                0.2,
+                0.03,
                 0.0,
-                0.0
+                0.02
             ],
             "start_time": 0.8,
             "end_time": 3.6
@@ -98,7 +98,7 @@
             "type": "object_translation",
             "object_id": "yellow_toy_car",
             "velocity": [
-                0.3,
+                0.016,
                 0.0,
                 0.0
             ],
@@ -109,7 +109,7 @@
             "type": "object_translation",
             "object_id": "black_toy_car",
             "velocity": [
-                -0.3,
+                -0.016,
                 0.0,
                 0.0
             ],
