@@ -2,7 +2,7 @@
     "base_config": "config/toy_car_2_collision_config.json",
     "render_space": "mpm",
     "time_overrides": {
-        "frame_num": 220,
+        "frame_num": 1,
         "frame_dt": 0.04
     },
     "image_postprocess": {
@@ -22,7 +22,7 @@
             "default_camera_index": -1,
             "move_camera": false,
             "init_azimuthm": -165.0,
-            "init_elevation": 12.0,
+            "init_elevation": 40.0,
             "init_radius": 3.0,
             "delta_a": 0.0,
             "delta_e": 0.0,
@@ -43,8 +43,6 @@
             "model_path": "./toy_car_2/toy_car_2/object_black_toy_car",
             "config": "config/toy_car_2_collision_config.json",
             "placement": {
-                "rotation_degree": [180.0],
-                "rotation_axis": [1],
                 "translation": [-0.26, 0.0, 0.0]
             }
         }
@@ -53,28 +51,28 @@
         {
             "type": "object_translation",
             "object_id": "yellow_toy_car",
-            "velocity": [0.02, 0.0, 0.0],
-            "start_time": 0.8,
-            "end_time": 3.6
-        },
-        {
-            "type": "object_translation",
-            "object_id": "black_toy_car",
             "velocity": [-0.02, 0.0, 0.0],
             "start_time": 0.8,
             "end_time": 3.6
         },
         {
             "type": "object_translation",
+            "object_id": "black_toy_car",
+            "velocity": [0.02, 0.0, 0.0],
+            "start_time": 0.8,
+            "end_time": 3.6
+        },
+        {
+            "type": "object_translation",
             "object_id": "yellow_toy_car",
-            "velocity": [-0.016, 0.0, 0.0],
+            "velocity": [0.016, 0.0, 0.0],
             "start_time": 3.75,
             "end_time": 5.15
         },
         {
             "type": "object_translation",
             "object_id": "black_toy_car",
-            "velocity": [0.016, 0.0, 0.0],
+            "velocity": [-0.016, 0.0, 0.0],
             "start_time": 3.75,
             "end_time": 5.15
         }

@@ -2,7 +2,7 @@
     "base_config": "config/toy_car_2_collision_config.json",
     "render_space": "mpm",
     "time_overrides": {
-        "frame_num": 220,
+        "frame_num": 5,
         "frame_dt": 0.04
     },
     "image_postprocess": {
@@ -20,11 +20,11 @@
         "horizontal_reference_mpm": [0.0, 0.0, 1.0],
         "overrides": {
             "default_camera_index": -1,
-            "move_camera": false,
+            "move_camera": true,
             "init_azimuthm": -165.0,
             "init_elevation": 12.0,
             "init_radius": 3.0,
-            "delta_a": 0.0,
+            "delta_a": 22.5,
             "delta_e": 0.0,
             "delta_r": 0.0
         }
@@ -35,7 +35,9 @@
             "model_path": "./toy_car_2/toy_car_2/object_yellow_toy_car",
             "config": "config/toy_car_2_collision_config.json",
             "placement": {
-                "translation": [0.26, 0.0, 0.0]
+                "rotation_degree": [10.0],
+                "rotation_axis": [0],
+                "translation": [-0.26, 0.0, 0.0]
             }
         },
         {
@@ -43,9 +45,9 @@
             "model_path": "./toy_car_2/toy_car_2/object_black_toy_car",
             "config": "config/toy_car_2_collision_config.json",
             "placement": {
-                "rotation_degree": [180.0],
-                "rotation_axis": [1],
-                "translation": [-0.26, 0.0, 0.0]
+                "rotation_degree": [10.0, 180.0],
+                "rotation_axis": [0, 1],
+                "translation": [0.26, 0.0, 0.0]
             }
         }
     ],
